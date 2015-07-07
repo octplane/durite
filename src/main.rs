@@ -21,9 +21,9 @@ Usage: dickedur -g GHOSTNAME -l HOSTNAME [-p PORT]
 
 Options:
     -h, --help     Show this screen.
-    -l HOSTNAME   Hostname to advertise in graphite.
+    -l HOSTNAME    Hostname to advertise in graphite.
     -g GHOSTNAME   Graphite Hostname.
-    -p PORT       Graphite port [default: 2003]
+    -p PORT        Graphite port [default: 2003]
 ";
 
 #[cfg(not(any(target_os="macos")))]
@@ -43,42 +43,54 @@ fn main() {
 
 	// Parse argv and exit the program with an error message if it fails.
 	let args = Docopt::new(USAGE)
-                  .and_then(|d| d.argv(std::env::args().into_iter()).parse())
-                  .unwrap_or_else(|e| e.exit());
+		.and_then(|d| d.argv(std::env::args().into_iter()).parse())
+		.unwrap_or_else(|e| e.exit());
 
+	println!("{:?}", args);
 
-    let connect_string = format!("{}:{}", args.get_str("<graphite_hostname>"), args.get_str("graphite_port"));
+    let connect_string = format!("{}:{}", args.get_str("-g"), args.get_str("-p"));
     println!("Connect string is {}", connect_string);
+    let my_hostname = args.get_str("-l");
 
 
-    let o = disk_free();
-	let stdout = String::from_utf8(o.stdout).
-		ok().
-		unwrap();
-
-	let lines = stdout.split("\n");
 
 	// graphite.proto.melvil.io 2003
 	// timestamp = 1436278152
 	// Graphite format
 	// local.random.diceroll 4 `date +%s`
-    let mut stream = TcpStream::connect(&*connect_string).unwrap();
-    let dt = chrono::UTC::now();
-    let timestamp = dt.timestamp();
 
+	while true {
+	    let dt = chrono::UTC::now();
+	    let timestamp = dt.timestamp();
+	    let o = disk_free();
+		let stdout = String::from_utf8(o.stdout).
+			ok().
+			unwrap();
 
-	for line in lines {
-		if line.starts_with("/") {
-			let values: Vec<&str> = line.split(" ").filter(|e| {
-				e.len() != 0
-			}).collect();
+		let lines = stdout.split("\n");
 
-			let disk = values[0];
-			let all = values[2];
-			let available = values[3];
+	    let mut stream = TcpStream::connect(&*connect_string).unwrap();
 
+		for line in lines {
+			if line.starts_with("/") {
+				let values: Vec<&str> = line.split(" ").filter(|e| {
+					e.len() != 0
+				}).collect();
 
-	 	}
+				let disk = values[0];
+				let all = values[2];
+				let available = values[3];
+
+				let content = format!("test.{}.{}.all {} {}\n", my_hostname, disk, all, timestamp);
+				println!("{}", content);
+				let _ = stream.write(&content.as_bytes());
+
+				let content = format!("test.{}.{}.available {} {}\n", my_hostname, disk, available, timestamp);
+				println!("{}", content);
+				let _ = stream.write(&content.as_bytes());
+		 	}
+		}
+	 	std::thread::sleep_ms(10000);
 	}
 
 
