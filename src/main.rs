@@ -16,8 +16,8 @@ use std::net::ToSocketAddrs;
 
 // Write the Docopt usage string.
 static USAGE: &'static str = "
-Usage: dickedur -g GHOSTNAME -l HOSTNAME [-p PORT]
-       dickedur (--help | -h)
+Usage: durite -g GHOSTNAME -l HOSTNAME [-p PORT]
+       durite (--help | -h)
 
 Options:
     -h, --help     Show this screen.

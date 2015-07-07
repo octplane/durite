@@ -1,5 +1,5 @@
 [package]
-name = "dockerie"
+name = "durite"
 version = "0.1.0"
 authors = ["Pierre Baillet <pierre@baillet.name>"]
 
