@@ -1,0 +1,9 @@
+[package]
+name = "dockerie"
+version = "0.1.0"
+authors = ["Pierre Baillet <pierre@baillet.name>"]
+
+[dependencies]
+riemann_client = "0.6.0"
+chrono = "0.2"
+docopt = "*"
