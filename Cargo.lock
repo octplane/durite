@@ -1,9 +1,10 @@
 [root]
-name = "dockerie"
+name = "durite"
 version = "0.1.0"
 dependencies = [
  "chrono 0.2.15 (registry+https://github.com/rust-lang/crates.io-index)",
  "docopt 0.6.67 (registry+https://github.com/rust-lang/crates.io-index)",
+ "libc 0.1.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "riemann_client 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 

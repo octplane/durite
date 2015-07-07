@@ -7,3 +7,4 @@ authors = ["Pierre Baillet <pierre@baillet.name>"]
 riemann_client = "0.6.0"
 chrono = "0.2"
 docopt = "*"
+libc="*"
