@@ -1,11 +1,8 @@
-extern crate riemann_client;
+
 extern crate chrono;
 extern crate docopt;
 
 use std::process::Command;
-
-use riemann_client::Client;
-use riemann_client::proto::Event;
 
 use std::io::prelude::*;
 use std::net::TcpStream;
@@ -41,7 +38,7 @@ use std::default::Default;
    //   };
 
 
-type uid = uint32_t;
+type Uid = uint32_t;
 
 
 #[repr(C)]
@@ -54,7 +51,7 @@ struct StatFs {
 	f_files:  uint64_t,
 	f_ffree:  uint64_t,
 	f_fsid:	  [uint32_t; 2],
-	f_owner:  uid,
+	f_owner:  Uid,
 	f_type:	  uint32_t,
 	f_flags:  uint32_t,
 	f_fstypename: 	[c_char; 16],
@@ -126,13 +123,6 @@ fn main() {
     println!("Connect string is {}", connect_string);
     let my_hostname = args.get_str("-l");
 
-
-
-	// graphite.proto.melvil.io 2003
-	// timestamp = 1436278152
-	// Graphite format
-	// local.random.diceroll 4 `date +%s`
-
 	while true {
 	    let dt = chrono::UTC::now();
 	    let timestamp = dt.timestamp();
@@ -156,12 +146,12 @@ fn main() {
 						let all = values[2];
 						let available = values[3];
 						let w = values[8].to_string();
-						let mut st: StatFs = Default::default();
-						let mp = CString::new(w.into_bytes()).unwrap();
-						unsafe {
-							let o = statfs(mp.as_ptr(), &mut st);
-							println!("o{}", o);
-						}
+						// let mut st: StatFs = Default::default();
+						// let mp = CString::new(w.into_bytes()).unwrap();
+						// unsafe {
+						// 	let o = statfs(mp.as_ptr(), &mut st);
+						// 	println!("o{} {:?}", o, st.f_bfree);
+						// }
 
 
 						let content = format!("test.{}.{}.all {} {}\n", my_hostname, disk, all, timestamp);
@@ -178,21 +168,4 @@ fn main() {
 		}
 	 	std::thread::sleep_ms(10000);
 	}
-
-
-    // let mut client = Client::connect(&("melvil.testing", 5555)).unwrap();
-    // client.event({
-    //     let mut event = Event::new();
-    //     event.set_service("rust-riemann_client".to_string());
-    //     event.set_state("ok".to_string());
-    //     event.set_metric_d(128.128);
-    //     event
-    // }).unwrap();
-
-    // client.event(riemann_client::Event {
-    //     service: "rust-riemann_client",
-    //     state: "ok",
-    //     metric_d: 128.128
-    //     ..Event::new()
-    // }).unwrap()
 }
