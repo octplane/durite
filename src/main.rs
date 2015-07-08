@@ -15,7 +15,7 @@ use libc::*;
 use std::ffi::CString;
 use std::default::Default;
 
-// #define MFSTYPENAMELEN  16  length of fs type name including null 
+// #define MFSTYPENAMELEN  16  length of fs type name including null
 // #define MAXPATHLEN      1024
 // #define MNAMELEN        MAXPATHLEN
    // struct statfs { /* when _DARWIN_FEATURE_64_BIT_INODE is defined */
@@ -98,8 +98,6 @@ Options:
     -g GHOSTNAME   Graphite Hostname.
     -p PORT        Graphite port [default: 2003]
 ";
-
-static VERSION: &'static str = "0.0.1"
 
 #[cfg(not(any(target_os="macos")))]
 fn disk_free() -> std::process::Output {
