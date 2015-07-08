@@ -99,6 +99,8 @@ Options:
     -p PORT        Graphite port [default: 2003]
 ";
 
+static VERSION: &'static str = "0.0.1"
+
 #[cfg(not(any(target_os="macos")))]
 fn disk_free() -> std::process::Output {
 	Command::new("df")
@@ -147,8 +149,9 @@ fn main() {
 						}).collect();
 
 						let disk = values[0];
-						let all = values[2];
-						let available = values[3];
+						// du reports kbytes
+						let all = values[2] * 1024;
+						let available = values[3] *1024;
 						// let w = values[8].to_string();
 						// let mut st: StatFs = Default::default();
 						// let mp = CString::new(w.into_bytes()).unwrap();
