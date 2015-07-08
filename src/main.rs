@@ -154,11 +154,11 @@ fn main() {
 						// }
 
 
-						let content = format!("test.{}.{}.all {} {}\n", my_hostname, disk, all, timestamp);
+						let content = format!("durite.{}.{}.all {} {}\n", my_hostname, disk, all, timestamp);
 						println!("{}", content);
 						let _ = stream.write(&content.as_bytes());
 
-						let content = format!("test.{}.{}.available {} {}\n", my_hostname, disk, available, timestamp);
+						let content = format!("durite.{}.{}.available {} {}\n", my_hostname, disk, available, timestamp);
 						println!("{}", content);
 						let _ = stream.write(&content.as_bytes());
 				 	}
