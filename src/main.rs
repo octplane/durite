@@ -145,7 +145,7 @@ fn main() {
 						let disk = values[0];
 						let all = values[2];
 						let available = values[3];
-						let w = values[8].to_string();
+						// let w = values[8].to_string();
 						// let mut st: StatFs = Default::default();
 						// let mp = CString::new(w.into_bytes()).unwrap();
 						// unsafe {
