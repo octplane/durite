@@ -114,6 +114,7 @@ fn disk_free() -> std::process::Output {
 
 fn send_content(stream: &mut std::net::TcpStream, hostname: &str, probe_and_value: String, timestamp: i64) {
 	let content = format!("durite.{}.{} {}\n", hostname, probe_and_value, timestamp);
+    println!("{}", content);
 	let _ = stream.write(&content.as_bytes());
 }
 
@@ -149,8 +150,8 @@ fn main() {
 
 						let disk = values[0];
 						// du reports kbytes
-                        let all: u64 = u64::from_str(values[1]).unwrap() * 1024;
-						let available: u64 = u64::from_str(values[3]).unwrap() *1024;
+                        let all: u64 = u64::from_str(values[1]).unwrap() / 1024;
+						let available: u64 = u64::from_str(values[3]).unwrap() / 1024;
 						// let w = values[8].to_string();
 						// let mut st: StatFs = Default::default();
 						// let mp = CString::new(w.into_bytes()).unwrap();
@@ -158,8 +159,8 @@ fn main() {
 						// 	let o = statfs(mp.as_ptr(), &mut st);
 						// 	println!("o{} {:?}", o, st.f_bfree);
 						// }
-						send_content(&mut stream, my_hostname, format!("{}.available {}", disk, available as f32), timestamp);
-						send_content(&mut stream, my_hostname, format!("{}.all {}", disk, all as f32), timestamp);
+						send_content(&mut stream, my_hostname, format!("{}.available {:3.3}", disk, available), timestamp);
+						send_content(&mut stream, my_hostname, format!("{}.all {}", disk, all), timestamp);
 				 	}
 				 }
 	    	},
