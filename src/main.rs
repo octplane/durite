@@ -9,6 +9,7 @@ use std::net::TcpStream;
 
 use docopt::Docopt;
 
+use std::str::FromStr;
 
 extern crate libc;
 use libc::*;
@@ -148,8 +149,8 @@ fn main() {
 
 						let disk = values[0];
 						// du reports kbytes
-						let all = values[2] * 1024;
-						let available = values[3] *1024;
+                        let all: u64 = u64::from_str(values[2]).unwrap() * 1024;
+						let available: u64 = u64::from_str(values[3]).unwrap() *1024;
 						// let w = values[8].to_string();
 						// let mut st: StatFs = Default::default();
 						// let mp = CString::new(w.into_bytes()).unwrap();
