@@ -158,8 +158,8 @@ fn main() {
 						// 	let o = statfs(mp.as_ptr(), &mut st);
 						// 	println!("o{} {:?}", o, st.f_bfree);
 						// }
-						send_content(&mut stream, my_hostname, format!("{}.available {}", disk, available), timestamp);
-						send_content(&mut stream, my_hostname, format!("{}.all {}", disk, all), timestamp);
+						send_content(&mut stream, my_hostname, format!("{}.available {}", disk, available as f32), timestamp);
+						send_content(&mut stream, my_hostname, format!("{}.all {}", disk, all as f32), timestamp);
 				 	}
 				 }
 	    	},
