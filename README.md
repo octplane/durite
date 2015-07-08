@@ -5,12 +5,12 @@ Very simple graphite disk free probe.
 - written in rust
 - needs df to run
 
-Send all df visible `/something` partition disk space to graphite very 10s.
+Send all df visible `/something` disk space partitions  to graphite very 10s.
 
-Metric is named:
+Metrics are named:
 
 `
-durite.hostname.path.do.dev.{available/all}
+durite.hostname.path.to.dev.{available/all}
 `
 
 # Build
@@ -24,6 +24,7 @@ cargo build --release
 ## Host without rust nightly
 
 Uses docker.
+
 `
 make
 `
