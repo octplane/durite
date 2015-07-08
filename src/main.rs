@@ -111,6 +111,10 @@ fn disk_free() -> std::process::Output {
 		.arg("-k").output().unwrap_or_else(|e| { panic!("failed to execute process: {}", e) })
 }
 
+fn send_content(stream: &mut std::net::TcpStream, hostname: &str, probe_and_value: String, timestamp: i64) {
+	let content = format!("durite.{}.{} {}\n", hostname, probe_and_value, timestamp);
+	let _ = stream.write(&content.as_bytes());
+}
 
 fn main() {
 
@@ -152,15 +156,8 @@ fn main() {
 						// 	let o = statfs(mp.as_ptr(), &mut st);
 						// 	println!("o{} {:?}", o, st.f_bfree);
 						// }
-
-
-						let content = format!("durite.{}.{}.all {} {}\n", my_hostname, disk, all, timestamp);
-						println!("{}", content);
-						let _ = stream.write(&content.as_bytes());
-
-						let content = format!("durite.{}.{}.available {} {}\n", my_hostname, disk, available, timestamp);
-						println!("{}", content);
-						let _ = stream.write(&content.as_bytes());
+						send_content(&mut stream, my_hostname, format!("{}.available {}", disk, available), timestamp);
+						send_content(&mut stream, my_hostname, format!("{}.all {}", disk, all), timestamp);
 				 	}
 				 }
 	    	},
