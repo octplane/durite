@@ -149,7 +149,7 @@ fn main() {
 
 						let disk = values[0];
 						// du reports kbytes
-                        let all: u64 = u64::from_str(values[2]).unwrap() * 1024;
+                        let all: u64 = u64::from_str(values[1]).unwrap() * 1024;
 						let available: u64 = u64::from_str(values[3]).unwrap() *1024;
 						// let w = values[8].to_string();
 						// let mut st: StatFs = Default::default();
