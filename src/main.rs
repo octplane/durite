@@ -114,7 +114,6 @@ fn disk_free() -> std::process::Output {
 
 fn send_content(stream: &mut std::net::TcpStream, hostname: &str, probe_and_value: String, timestamp: i64) {
 	let content = format!("durite.{}.{} {}\n", hostname, probe_and_value, timestamp);
-    println!("{}", content);
 	let _ = stream.write(&content.as_bytes());
 }
 
@@ -159,6 +158,8 @@ fn main() {
 						// 	let o = statfs(mp.as_ptr(), &mut st);
 						// 	println!("o{} {:?}", o, st.f_bfree);
 						// }
+
+                        // {:6E} 6 digit, lower exponential format
 						send_content(&mut stream, my_hostname, format!("{}.available {:3.3}", disk, available), timestamp);
 						send_content(&mut stream, my_hostname, format!("{}.all {}", disk, all), timestamp);
 				 	}
