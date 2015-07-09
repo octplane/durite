@@ -1,0 +1,12 @@
+[package]
+name = "du-sys"
+version = "0.1.0"
+authors = ["Pierre Baillet <pierre@baillet.name>"]
+
+[lib]
+name = "du_sys"
+test = false
+doc = true
+
+[dependencies]
+libc="*"
