@@ -3,6 +3,10 @@ name = "durite"
 version = "0.1.0"
 authors = ["Pierre Baillet <pierre@baillet.name>"]
 
+#[dependencies.du-sys]
+#path = "du-sys"
+#version = "~0.1.0"
+
 [dependencies]
 chrono = "0.2"
 docopt = "*"
