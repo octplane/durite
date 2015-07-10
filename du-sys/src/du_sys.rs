@@ -1,6 +1,10 @@
 extern crate libc;
 use libc::*;
 use std::default::Default;
+use std::ffi::CString;
+use std::mem::transmute;
+
+use std::ffi::CStr;
 
 // #define MFSTYPENAMELEN  16  length of fs type name including null
 // #define MAXPATHLEN      1024
@@ -25,22 +29,20 @@ use std::default::Default;
    //   };
 
 
-pub type Uid = uint32_t;
-
-
 #[repr(C)]
 pub struct StatFs {
-    pub f_bsize: uint32_t,
-    pub f_iosize: int32_t,
-    pub f_blocks: uint64_t,
-    pub f_bfree:  uint64_t,
-    pub f_bavail: uint64_t,
-    pub f_files:  uint64_t,
-    pub f_ffree:  uint64_t,
-    pub f_fsid:   [uint32_t; 2],
-    pub f_owner:  Uid,
-    pub f_type:   uint32_t,
-    pub f_flags:  uint32_t,
+    pub f_bsize:     uint32_t,
+    pub f_iosize:    int32_t,
+    pub f_blocks:    uint64_t,
+    pub f_bfree:     uint64_t,
+    pub f_bavail:    uint64_t,
+    pub f_files:     uint64_t,
+    pub f_ffree:     uint64_t,
+    pub f_fsid:      [uint32_t; 2],
+    pub f_owner:     uid_t,
+    pub f_type:      uint32_t,
+    pub f_flags:     uint32_t,
+    pub f_fssubtype: uint32_t,
     pub f_fstypename:   [c_char; 16],
     pub f_mntonname:    [c_char; 1024],
     pub f_mntfromname:  [c_char; 1024],
@@ -61,6 +63,7 @@ impl Default for StatFs {
             f_owner: 0,
             f_type: 0,
             f_flags: 0,
+            f_fssubtype: 0,
             f_fstypename: [0; 16],
             f_mntonname:  [0; 1024],
             f_mntfromname:[0; 1024],
@@ -69,7 +72,25 @@ impl Default for StatFs {
     }
 }
 
+impl StatFs {
+    pub fn fstypename(&self) -> String {
+        let v = unsafe { CStr::from_ptr(&self.f_fstypename as *const i8).to_bytes().to_vec() };
+        String::from_utf8(v).unwrap()
+    }
+
+    pub fn mntonname(&self) -> String {
+        let v = unsafe { CStr::from_ptr(&self.f_mntonname as *const i8).to_bytes().to_vec() };
+        String::from_utf8(v).unwrap()
+        // let foo: [u8; 1024] = unsafe { transmute(self.f_mntfromname)};
+        // String::from_utf8_lossy(&foo).to_string()
+    }
+    pub fn mntfromname(&self) -> String {
+        let v = unsafe { CStr::from_ptr(&self.f_mntfromname as *const i8).to_bytes().to_vec() };
+        String::from_utf8(v).unwrap()
+    }
+}
+
 extern {
-    pub fn statfs(path: *const c_char, stafs: *mut StatFs) -> size_t;
+    pub fn statfs64(path: *const c_char, stafs: *mut StatFs) -> size_t;
     // statfs(const char *path, struct statfs *buf);
 }
