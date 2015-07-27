@@ -1,7 +1,7 @@
 extern crate du_sys as du;
 
 use std::ffi::CString;
-use du::{StatFs, statfs64};
+use du::{StatFs, statfs64, objc_getClass};
 
 
 #[cfg(not(any(target_os="macos")))]
@@ -19,6 +19,10 @@ fn lets_get_kraken(mount_point: String) {
      println!("f_mntfromname {:?}", st.mntfromname());
      println!("f_mntonname {:?}", st.mntonname());
      println!("ffree {:?}",  st.f_ffree);
+
+     let ns = CString::new("NSFileManager").unwrap();
+     let cls = objc_getClass(ns.as_ptr());
+     println!("{:?}", cls);
     }
 
 }

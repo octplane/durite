@@ -1,7 +1,9 @@
 [package]
 name = "durite"
-version = "0.1.0"
+version = "0.3.0"
 authors = ["Pierre Baillet <pierre@baillet.name>"]
+description = "DU graphite probe"
+license-file = "LICENSE"
 
 #[dependencies.du-sys]
 #path = "du-sys"

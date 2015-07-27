@@ -1,10 +1,7 @@
 extern crate libc;
 use libc::*;
 use std::default::Default;
-use std::ffi::CString;
-use std::mem::transmute;
-
-use std::ffi::CStr;
+    use std::ffi::CStr;
 
 // #define MFSTYPENAMELEN  16  length of fs type name including null
 // #define MAXPATHLEN      1024
@@ -84,7 +81,7 @@ impl StatFs {
         // let foo: [u8; 1024] = unsafe { transmute(self.f_mntfromname)};
         // String::from_utf8_lossy(&foo).to_string()
     }
-    pub fn mntfromname(&self) -> String {
+    pub fn  mntfromname(&self) -> String {
         let v = unsafe { CStr::from_ptr(&self.f_mntfromname as *const i8).to_bytes().to_vec() };
         String::from_utf8(v).unwrap()
     }
@@ -93,4 +90,13 @@ impl StatFs {
 extern {
     pub fn statfs64(path: *const c_char, stafs: *mut StatFs) -> size_t;
     // statfs(const char *path, struct statfs *buf);
+}
+
+pub type ClassPointer = *mut libc::c_void;
+
+
+#[link(name = "CoreServices", kind = "framework")]
+#[link(name = "objc")]
+extern {
+    pub fn objc_getClass (name: *const c_char) -> ClassPointer;
 }
