@@ -93,10 +93,17 @@ extern {
 }
 
 pub type ClassPointer = *mut libc::c_void;
-
+pub type SEL = *mut libc::c_void;
+pub type NSArray = *mut libc::c_void;
 
 #[link(name = "CoreServices", kind = "framework")]
 #[link(name = "objc")]
 extern {
     pub fn objc_getClass (name: *const c_char) -> ClassPointer;
+    pub fn objc_msgSend(id: ClassPointer, sel: SEL, parm: *const c_char) -> ClassPointer;
+    pub fn sel_getUid (selector: *const c_char) -> SEL;
+    pub fn CFShow(source: ClassPointer);
+    //(NSArray *)propertyKeys options:(NSVolumeEnumerationOptions)options
+    pub fn mountedVolumeURLsIncludingResourceValuesForKeys(propertyKeys: *const c_char, options: *const c_char) -> NSArray;
 }
+
