@@ -66,7 +66,10 @@ fn main() {
 
 
     let mut riemann_connection: Option<Client> = if args.get_str("-r") != "" {
-        Some(Client::connect(&(args.get_str("-r"), u16::from_str(args.get_str("-o")).unwrap())).unwrap())
+        match Client::connect(&(args.get_str("-r"), u16::from_str(args.get_str("-o")).unwrap())) {
+            Ok(c) => Some(c),
+            Err(e) => {println!("Oups: {:?}", e); None}
+        }
     } else {
         None
     };
