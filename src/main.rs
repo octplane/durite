@@ -127,8 +127,9 @@ fn main() {
                     Some(ref mut client) => {
                         client.event({
                                 let mut event = Event::new();
-                                event.set_service(format!("durite {} disk {} percent free", my_hostname, disk).to_string());
-                                event.set_metric_d(available as f64 / all as f64);
+                                event.set_service(format!("durite {} disk {} percent used", my_hostname, disk).to_string());
+                                let percent_used: u64 = 100 - 100*(available/all);
+                                event.set_metric_d(percent_used as f64 / 100 as f64);
                                 event
                             }).unwrap();
                     },
