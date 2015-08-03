@@ -1,6 +1,6 @@
 # About
 
-Very simple graphite disk free probe.
+Very simple graphite/riemann disk free probe.
 
 - written in rust
 - needs df to run
@@ -33,6 +33,6 @@ make
 # Usage
 
 `
-./target/release/durite -g graphite.hostna.me -l myhostname -p 2003
+./target/release/durite -g graphite.hostna.me -l myhostname -p 2003 -r riemann.hostna.me -o 5555
 `
 

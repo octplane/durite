@@ -1,6 +1,6 @@
 [package]
 name = "durite"
-version = "0.3.0"
+version = "0.3.1"
 authors = ["Pierre Baillet <pierre@baillet.name>"]
 description = "DU graphite probe"
 license-file = "LICENSE"
@@ -13,3 +13,4 @@ license-file = "LICENSE"
 chrono = "0.2"
 docopt = "*"
 libc="*"
+riemann_client = "*"
