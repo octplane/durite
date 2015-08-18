@@ -1,7 +1,9 @@
 extern crate libc;
 use libc::*;
 use std::default::Default;
-    use std::ffi::CStr;
+use std::ffi::CStr;
+
+use std::ffi::CString;
 
 // #define MFSTYPENAMELEN  16  length of fs type name including null
 // #define MAXPATHLEN      1024
@@ -92,9 +94,19 @@ extern {
     // statfs(const char *path, struct statfs *buf);
 }
 
+
+pub type CFIndex = uint64_t;
 pub type ClassPointer = *mut libc::c_void;
 pub type SEL = *mut libc::c_void;
-pub type NSArray = *mut libc::c_void;
+pub type NSArray = ClassPointer;
+pub type CFArrayRef = ClassPointer;
+
+#[repr(C)]
+pub struct CFRange {
+    location: CFIndex,
+    length: CFIndex
+}
+
 
 #[link(name = "CoreServices", kind = "framework")]
 #[link(name = "objc")]
@@ -103,7 +115,18 @@ extern {
     pub fn objc_msgSend(id: ClassPointer, sel: SEL, parm: *const c_char) -> ClassPointer;
     pub fn sel_getUid (selector: *const c_char) -> SEL;
     pub fn CFShow(source: ClassPointer);
+    pub fn CFArrayGetValues (theArray: CFArrayRef, range: CFRange , values: *const libc::c_void );
+    pub fn CFArrayGetCount(theArray: CFArrayRef) -> CFIndex;
     //(NSArray *)propertyKeys options:(NSVolumeEnumerationOptions)options
     pub fn mountedVolumeURLsIncludingResourceValuesForKeys(propertyKeys: *const c_char, options: *const c_char) -> NSArray;
+
 }
 
+pub fn call_selector_on(object: ClassPointer, selector: &str, _parm: *const c_char) -> ClassPointer {
+    unsafe {
+        let csel = CString::new(selector).unwrap();
+        let selector = sel_getUid (csel.as_ptr());
+        let r = objc_msgSend(object, selector, std::ptr::null()); // => ok
+        r
+    }
+}
