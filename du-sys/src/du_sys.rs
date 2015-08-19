@@ -1,9 +1,13 @@
 extern crate libc;
 use libc::*;
+use std::ptr;
 use std::default::Default;
 use std::ffi::CStr;
 
 use std::ffi::CString;
+
+use std::collections::hash_map::HashMap;
+use std::fmt;
 
 // #define MFSTYPENAMELEN  16  length of fs type name including null
 // #define MAXPATHLEN      1024
@@ -47,6 +51,21 @@ pub struct StatFs {
     pub f_mntfromname:  [c_char; 1024],
     pub f_reserved:     [uint32_t; 8],
 }
+
+impl fmt::Debug for StatFs {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+
+// -        println!("bfree {:?}", st.f_bfree);
+// -        println!("bavail {:?}", st.f_bavail);
+// -        println!("fs_type_name {:?}", st.fstypename());
+// -        println!("f_mntfromname {:?}", st.mntfromname());
+// -        println!("f_mntonname {:?}", st.mntonname());
+// -        println!("ffree {:?}",  st.f_ffree);
+
+        write!(f, "on {:?} as {:?} [{:?}/{:?}]", self.mntonname(), self.fstypename(), self.f_bfree, self.f_blocks)
+    }
+}
+
 
 impl Default for StatFs {
     fn default() -> StatFs {
@@ -103,8 +122,8 @@ pub type CFArrayRef = ClassPointer;
 
 #[repr(C)]
 pub struct CFRange {
-    location: CFIndex,
-    length: CFIndex
+    pub location: CFIndex,
+    pub length: CFIndex
 }
 
 
@@ -115,18 +134,60 @@ extern {
     pub fn objc_msgSend(id: ClassPointer, sel: SEL, parm: *const c_char) -> ClassPointer;
     pub fn sel_getUid (selector: *const c_char) -> SEL;
     pub fn CFShow(source: ClassPointer);
-    pub fn CFArrayGetValues (theArray: CFArrayRef, range: CFRange , values: *const libc::c_void );
+    pub fn CFArrayGetValues (theArray: CFArrayRef, range: CFRange , values: *const *const libc::c_char );
     pub fn CFArrayGetCount(theArray: CFArrayRef) -> CFIndex;
     //(NSArray *)propertyKeys options:(NSVolumeEnumerationOptions)options
     pub fn mountedVolumeURLsIncludingResourceValuesForKeys(propertyKeys: *const c_char, options: *const c_char) -> NSArray;
 
 }
 
-pub fn call_selector_on(object: ClassPointer, selector: &str, _parm: *const c_char) -> ClassPointer {
+pub fn call_selector_on(object: ClassPointer, selector: &str) -> ClassPointer {
     unsafe {
         let csel = CString::new(selector).unwrap();
         let selector = sel_getUid (csel.as_ptr());
         let r = objc_msgSend(object, selector, std::ptr::null()); // => ok
         r
     }
+}
+
+pub fn mounted_volume_stats() -> HashMap<String, StatFs> {
+
+    let mut ret = HashMap::new();
+    for v in mounted_volume_urls() {
+        if v.starts_with("file:///") {
+            let mount_point: String = v.chars().skip(7).collect();
+            let mut st: StatFs = Default::default();
+            let mp = CString::new(mount_point.clone().into_bytes()).unwrap();
+            unsafe {
+                let r = statfs64(mp.as_ptr(), &mut st);
+                if r==0 {
+                    ret.insert(mount_point, st);
+                }
+            }
+        }
+    }
+    ret
+}
+
+pub fn mounted_volume_urls() -> Vec<String> {
+    let mut ret: Vec<String> = vec!();
+    let ns = CString::new("NSFileManager").unwrap();
+    unsafe {
+        let file_manager_class = objc_getClass(ns.as_ptr());
+        let default_manager = call_selector_on(file_manager_class, "defaultManager");
+
+        let array = call_selector_on(default_manager, "mountedVolumeURLsIncludingResourceValuesForKeys:options:");
+        let size: uint64_t = CFArrayGetCount(array);
+        let range = CFRange{location: 0, length: size };
+        let values: Vec<*const c_char> = vec![ptr::null(); size as usize];
+        CFArrayGetValues(array, range, values.as_ptr());
+        for p in values {
+            let nstring = call_selector_on(p as ClassPointer, "absoluteString");
+            let cstring = call_selector_on(nstring as ClassPointer, "UTF8String");
+            let cstr = CStr::from_ptr(cstring as *const c_char);
+            let str = std::str::from_utf8(cstr.to_bytes()).unwrap().to_string();
+            ret.push(str);
+        }
+    }
+    ret
 }
