@@ -10,7 +10,7 @@ license-file = "LICENSE"
 #version = "~0.1.0"
 
 [dependencies]
-chrono = "0.2"
+chrono = "*"
 docopt = "*"
 libc="*"
 riemann_client = "*"
